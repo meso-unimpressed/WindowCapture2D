@@ -3,10 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsHWrapper.h"
+#include <WinUser.h>
+#else
+using HBITMAP = void*;
+using HDC = void*;
+using HWND = void*;
+#endif
+
 #include "CaptureMachineProperties.generated.h"
 
+USTRUCT(BlueprintType)
 struct FIntVector2D
 {	
+	GENERATED_BODY()
+
 	int32 X;
 	int32 Y;
 	
@@ -59,4 +72,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WindowCapture2D)
 	bool CutShadow = true;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WindowCapture2D)
+	bool TransferMouse = false;
+
+};
+
+
+UENUM(BlueprintType)
+enum class EMouseInputTransferType : uint8
+{
+	MouseDown,
+	MouseMove,
+	MouseUp,
+	MouseClick
 };

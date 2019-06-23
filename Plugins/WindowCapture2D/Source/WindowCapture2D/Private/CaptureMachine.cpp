@@ -274,3 +274,16 @@ void UCaptureMachine::ReCreateTexture()
 	}
 #endif
 }
+
+bool UCaptureMachine::IsFoundWindow()
+{
+	return m_TargetWindow != nullptr;
+}
+
+HWND UCaptureMachine::GetTargetWindow()
+{
+	if (!m_TargetWindow) return nullptr;
+	if (!::IsWindow(m_TargetWindow)) return nullptr;
+
+	return m_TargetWindow;
+}

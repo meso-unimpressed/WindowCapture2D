@@ -2,7 +2,7 @@
 
 #include "WindowCaptureWidget.h"
 #include "Engine/Texture2D.h"
-
+#include "InputTransferToWindow.h"
 
 UWindowCaptureWidget::UWindowCaptureWidget(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -33,6 +33,13 @@ UTexture2D* UWindowCaptureWidget::Start()
 	CaptureMachine->Properties = Properties;
 
 	CaptureMachine->ChangeTexture.AddDynamic(this, &UWindowCaptureWidget::OnChangeTexture);
+
+	if (Properties.TransferMouse)
+	{
+		InputTransfer = NewObject<UInputTransferToWindow>(this);
+		InputTransfer->ConnectingCaptureMachine(CaptureMachine);
+	}
+
 	CaptureMachine->Start();
 
 	return CaptureMachine->CreateTexture();
@@ -41,4 +48,31 @@ UTexture2D* UWindowCaptureWidget::Start()
 void UWindowCaptureWidget::OnChangeTexture(UTexture2D* _NewTexture)
 {
 	ChangeTexture.Broadcast(_NewTexture);
+}
+
+FReply UWindowCaptureWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+
+	if (!InputTransfer) return FReply::Unhandled();
+
+	auto mousePosition = InMouseEvent.GetScreenSpacePosition();
+
+	//InputTransfer->NotifyMouseEvent(FIntVector2D(mousePosition.X, mousePosition.Y), EMouseInputTransferType::MouseDown);
+
+	return FReply::Unhandled();
+}
+
+FReply UWindowCaptureWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+
+	if (!InputTransfer) return FReply::Unhandled();
+
+	auto mousePosition = InMouseEvent.GetScreenSpacePosition();
+
+	InputTransfer->NotifyMouseEvent(FIntVector2D(mousePosition.X, mousePosition.Y), EMouseInputTransferType::MouseClick);
+
+	return FReply::Unhandled();
+
 }

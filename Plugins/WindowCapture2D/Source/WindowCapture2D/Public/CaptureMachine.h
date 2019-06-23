@@ -4,17 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "CaptureMachineProperties.h"
-#if PLATFORM_WINDOWS
-#include "Windows/WindowsHWrapper.h"
-#include <WinUser.h>
-#else
-using HBITMAP = void*;
-using HDC = void*;
-using HWND = void*;
-#endif
 #include "CaptureMachine.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCaptureMachineChangeTexture, UTexture2D*, NewTexture);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCaptureMachineFoundWindow, UTexture2D*, NewTexture);
 
 
 UCLASS(BlueprintType, Blueprintable)
@@ -30,6 +23,11 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = WindowCapture2D)
 	UTexture2D* CreateTexture();
+
+	UFUNCTION(BlueprintPure, Category = WindowCapture2D)
+	bool IsFoundWindow();
+
+	HWND GetTargetWindow();
 
 protected:
 	bool FindTargetWindow(HWND hWnd);

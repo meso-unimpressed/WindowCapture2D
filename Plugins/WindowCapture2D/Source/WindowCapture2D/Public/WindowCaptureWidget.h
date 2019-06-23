@@ -8,9 +8,9 @@
 #include "CaptureMachine.h"
 #include "WindowCaptureWidget.generated.h"
 
+class UInputTransferToWindow;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWindowCaptureWidgetChangeTexture, UTexture2D*, NewTexture);
-
 
 UCLASS(BlueprintType, Blueprintable)
 class WINDOWCAPTURE2D_API UWindowCaptureWidget : public UUserWidget
@@ -43,4 +43,12 @@ public:
 protected:
 	UPROPERTY(Transient)
 	UCaptureMachine* CaptureMachine = nullptr;
+
+	UPROPERTY(Transient)
+	UInputTransferToWindow* InputTransfer = nullptr;
+
+protected:
+	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+	virtual FReply NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
+
 };
