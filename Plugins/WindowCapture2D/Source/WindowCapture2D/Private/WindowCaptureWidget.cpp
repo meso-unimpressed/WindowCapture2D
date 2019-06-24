@@ -52,7 +52,7 @@ void UWindowCaptureWidget::OnChangeTexture(UTexture2D* _NewTexture)
 
 FReply UWindowCaptureWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	auto rep = Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 
 	if (!InputTransfer) return FReply::Unhandled();
 
@@ -60,19 +60,27 @@ FReply UWindowCaptureWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry
 
 	//InputTransfer->NotifyMouseEvent(FIntVector2D(mousePosition.X, mousePosition.Y), EMouseInputTransferType::MouseDown);
 
-	return FReply::Unhandled();
+	return rep;
 }
 
 FReply UWindowCaptureWidget::NativeOnMouseButtonUp(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-	Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
+	auto rep = Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
 
 	if (!InputTransfer) return FReply::Unhandled();
 
-	auto mousePosition = InMouseEvent.GetScreenSpacePosition();
+	auto mousePosition = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
 
-	InputTransfer->NotifyMouseEvent(FIntVector2D(mousePosition.X, mousePosition.Y), EMouseInputTransferType::MouseClick);
+	auto targetWindowSize = CaptureMachine->GetTargetWindowSize();
 
-	return FReply::Unhandled();
+	POINT pt = { 
+		mousePosition.X / InGeometry.GetLocalSize().X * targetWindowSize.X,
+		mousePosition.Y / InGeometry.GetLocalSize().Y * targetWindowSize.Y};
+
+	::ClientToScreen(CaptureMachine->GetTargetWindow(), &pt);
+
+	InputTransfer->NotifyMouseEvent(FIntVector2D(pt.x, pt.y), EMouseInputTransferType::MouseClick);
+
+	return rep;
 
 }

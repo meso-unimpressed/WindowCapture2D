@@ -28,15 +28,32 @@ void UInputTransferToWindow::NotifyMouseEvent(FIntVector2D ScreenPosition, EMous
 
 	if (MouseType == EMouseInputTransferType::MouseClick)
 	{
-		INPUT data[3];
-		memset(&data, 0, sizeof(data));
+		POINT beforeMousePt;
+		::GetCursorPos(&beforeMousePt);
+
+		INPUT data[4];
+		memset(data, 0, sizeof(data));
 		data[0].type = INPUT_MOUSE;
 		data[0].mi.dx = MOUSE_LOCATION_X(ScreenPosition.X);
 		data[0].mi.dy = MOUSE_LOCATION_Y(ScreenPosition.Y);
-		data[0].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_LEFTDOWN | MOUSEEVENTF_LEFTUP;
+		data[0].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
 
+		data[1].type = INPUT_MOUSE;
+		data[1].mi.dx = 0;
+		data[1].mi.dy = 0;
+		data[1].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
 
-		::SendInput(1, data, sizeof(INPUT));
+		data[2].type = INPUT_MOUSE;
+		data[2].mi.dx = 0;
+		data[2].mi.dy = 0;
+		data[2].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+		data[3].type = INPUT_MOUSE;
+		data[3].mi.dx = MOUSE_LOCATION_X(beforeMousePt.x);
+		data[3].mi.dy = MOUSE_LOCATION_Y(beforeMousePt.y);
+		data[3].mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+
+		::SendInput(4, data, sizeof(INPUT));
 	}
 	else
 	{

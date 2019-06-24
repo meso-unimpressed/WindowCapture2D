@@ -28,6 +28,7 @@ public:
 	bool IsFoundWindow();
 
 	HWND GetTargetWindow();
+	FIntVector2D GetTargetWindowSize();
 
 protected:
 	bool FindTargetWindow(HWND hWnd);

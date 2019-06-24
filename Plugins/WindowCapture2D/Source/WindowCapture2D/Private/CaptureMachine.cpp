@@ -287,3 +287,12 @@ HWND UCaptureMachine::GetTargetWindow()
 
 	return m_TargetWindow;
 }
+
+FIntVector2D UCaptureMachine::GetTargetWindowSize()
+{
+	if (!m_TargetWindow) return FIntVector2D(0, 0);
+	if (!::IsWindow(m_TargetWindow)) return FIntVector2D(0, 0);
+
+	return m_WindowSize;
+
+}
