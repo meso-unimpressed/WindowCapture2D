@@ -2,6 +2,8 @@
 #include "OperateWindowComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "WindowCaptureActor.h"
+#include "GameFramework/Actor.h"
 
 UOperateWindowComponent::UOperateWindowComponent()
 {
@@ -15,36 +17,58 @@ void UOperateWindowComponent::TickComponent(float DeltaTime, enum ELevelTick Tic
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!OwnerComponent) return;
+
 	FHitResult OutHit;
 
-	FVector PlayerViewLocation;
-	FRotator PlayerViewRotation;
-	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewLocation, OUT PlayerViewRotation);
+	auto ownerLocation = OwnerComponent->GetComponentLocation();
+	auto ownerRotaion = OwnerComponent->GetComponentRotation();
 
-	FVector TraceEnd = PlayerViewLocation + PlayerViewRotation.Vector() * 100.0f;
+	FVector TraceEnd = ownerLocation + ownerRotaion.Vector() * 200.0f;
 
 	FCollisionQueryParams CollisionParams;
 
 	CollisionParams.bTraceComplex = true;
 	CollisionParams.bReturnFaceIndex = true;
 
-	DrawDebugLine(GetWorld(), PlayerViewLocation, TraceEnd, FColor::Green, false, 1, 0, 1);
+	//DrawDebugLine(GetWorld(), ownerLocation, TraceEnd, FColor::Green, false, 1, 0, 1);
 
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, PlayerViewLocation, TraceEnd, ECC_Visibility, CollisionParams))
+	bool isTouched = false;
+
+	if (IsEnable)
 	{
-		if (OutHit.bBlockingHit)
+		if (GetWorld()->LineTraceSingleByChannel(OutHit, ownerLocation, TraceEnd, ECC_Visibility, CollisionParams))
 		{
-			if (GEngine) 
+			if (OutHit.bBlockingHit)
 			{
-				FVector2D uv;
-				UGameplayStatics::FindCollisionUV(OutHit, 0, uv);
+				TouchedActor = Cast<AWindowCaptureActor>(OutHit.GetActor());
+				if (TouchedActor)
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("You are hitting: %s"), *OutHit.GetActor()->GetName()));
-					GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Impact Point: %f, %f"), uv.X, uv.Y));
-
+					FVector2D uv;
+					if (UGameplayStatics::FindCollisionUV(OutHit, 0, uv))
+					{
+						TouchedActor->NotifyTouchOn(uv);
+						isTouched = true;
+					}
 				}
-
 			}
 		}
 	}
+	
+	
+	if (TouchedActor && !isTouched)
+	{
+		TouchedActor->NotifyTouchEnd();
+		TouchedActor = nullptr;
+	}
+}
+
+void UOperateWindowComponent::SetOwnerComponent(USceneComponent* _OwnerComponent)
+{
+	OwnerComponent = _OwnerComponent;
+}
+
+void UOperateWindowComponent::SetEnable(bool _IsEnable)
+{
+	IsEnable = _IsEnable;
 }
