@@ -18,7 +18,7 @@ public:
 	void SetOwnerComponent(USceneComponent* OwnerComponent);
 
 	UFUNCTION(BlueprintCallable, Category = WindowCapture2D)
-	void SetEnable(bool IsEnable);
+	void SetEnable(bool IsEnable, int32 TouchIndex);
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -30,4 +30,7 @@ private:
 	USceneComponent* OwnerComponent = nullptr;
 
 	bool IsEnable;
+
+	UPROPERTY(Transient)
+		int32 TouchIndex = 0;
 };

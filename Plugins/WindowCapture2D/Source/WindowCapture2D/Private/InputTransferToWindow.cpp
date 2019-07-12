@@ -4,7 +4,6 @@
 
 UInputTransferToWindow::UInputTransferToWindow()
 {
-
 }
 
 void UInputTransferToWindow::ConnectingCaptureMachine(UCaptureMachine* _CaptureMachine)

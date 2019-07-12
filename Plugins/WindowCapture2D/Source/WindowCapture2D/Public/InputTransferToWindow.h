@@ -7,6 +7,7 @@
 #include "InputTransferToWindow.generated.h"
 
 class UCaptureMachine;
+class WCWindowTouchManager;
 
 UCLASS(BlueprintType, Blueprintable)
 class WINDOWCAPTURE2D_API UInputTransferToWindow : public UObject
@@ -21,7 +22,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = WindowCapture2D)
 	void NotifyMouseEvent(FIntVector2D ScreenPosition, EMouseInputTransferType MouseType);
 
+
+
 private:
 	UPROPERTY(Transient)
 	UCaptureMachine* CaptureMachine;
+
 };

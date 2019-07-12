@@ -41,13 +41,23 @@ void UOperateWindowComponent::TickComponent(float DeltaTime, enum ELevelTick Tic
 		{
 			if (OutHit.bBlockingHit)
 			{
+				bool isTouchedOn = TouchedActor != nullptr;
+
 				TouchedActor = Cast<AWindowCaptureActor>(OutHit.GetActor());
 				if (TouchedActor)
 				{
 					FVector2D uv;
 					if (UGameplayStatics::FindCollisionUV(OutHit, 0, uv))
 					{
-						TouchedActor->NotifyTouchOn(uv);
+						if (isTouchedOn)
+						{
+							TouchedActor->NotifyTouchMove(uv, TouchIndex);
+						}
+						else
+						{
+							TouchedActor->NotifyTouchOn(uv, TouchIndex);
+						}
+
 						isTouched = true;
 					}
 				}
@@ -58,7 +68,7 @@ void UOperateWindowComponent::TickComponent(float DeltaTime, enum ELevelTick Tic
 	
 	if (TouchedActor && !isTouched)
 	{
-		TouchedActor->NotifyTouchEnd();
+		TouchedActor->NotifyTouchEnd(TouchIndex);
 		TouchedActor = nullptr;
 	}
 }
@@ -68,7 +78,8 @@ void UOperateWindowComponent::SetOwnerComponent(USceneComponent* _OwnerComponent
 	OwnerComponent = _OwnerComponent;
 }
 
-void UOperateWindowComponent::SetEnable(bool _IsEnable)
+void UOperateWindowComponent::SetEnable(bool _IsEnable, int32 _TouchIndex)
 {
 	IsEnable = _IsEnable;
+	TouchIndex = _TouchIndex;
 }

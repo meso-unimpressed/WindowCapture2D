@@ -7,15 +7,20 @@ public class WindowCapture2D : ModuleRules
 	public WindowCapture2D(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
-			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
+
+        PublicIncludePaths.Add(ModuleDirectory + "/library/header/");
+
+        if (Target.Platform == UnrealTargetPlatform.Win64)
+        {
+            PublicAdditionalLibraries.Add(ModuleDirectory + "/library/lib/InjectTouchInputLib64.lib");
+        }
+        else if (Target.Platform == UnrealTargetPlatform.Win32)
+        {
+            PublicAdditionalLibraries.Add(ModuleDirectory + "/library/lib/InjectTouchInputLib.lib");
+        }
+
+
+        PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
 			}

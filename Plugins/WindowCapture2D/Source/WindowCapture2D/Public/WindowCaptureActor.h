@@ -11,7 +11,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWindowCaptureActorChangeTexture, UTexture2D*, NewTexture);
 
-class UInputTransferToWindow;
+class WCWindowTouchManager;
 
 UCLASS(BlueprintType, Blueprintable)
 class WINDOWCAPTURE2D_API AWindowCaptureActor : public AActor
@@ -35,10 +35,13 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = WindowCapture2D)
-	void NotifyTouchOn(FVector2D UV);
+	void NotifyTouchOn(FVector2D UV, int32 Index);
 
 	UFUNCTION(BlueprintCallable, Category = WindowCapture2D)
-	void NotifyTouchEnd();
+	void NotifyTouchMove(FVector2D UV, int32 Index);
+
+	UFUNCTION(BlueprintCallable, Category = WindowCapture2D)
+	void NotifyTouchEnd(int32 Index);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WindowCapture2D)
@@ -54,9 +57,9 @@ protected:
 	UPROPERTY(Transient)
 	UCaptureMachine* CaptureMachine = nullptr;
 
-	UPROPERTY(Transient)
-	UInputTransferToWindow* InputTransfer = nullptr;
-
 	bool IsTouched = false;
 	FVector2D LastTouchUV;
+
+	WCWindowTouchManager* TouchManager;
+
 };
