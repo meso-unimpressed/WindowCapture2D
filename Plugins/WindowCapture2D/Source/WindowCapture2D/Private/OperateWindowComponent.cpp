@@ -24,7 +24,7 @@ void UOperateWindowComponent::TickComponent(float DeltaTime, enum ELevelTick Tic
 	auto ownerLocation = OwnerComponent->GetComponentLocation();
 	auto ownerRotaion = OwnerComponent->GetComponentRotation();
 
-	FVector TraceEnd = ownerLocation + ownerRotaion.Vector() * 200.0f;
+	FVector TraceEnd = ownerLocation + ownerRotaion.Vector() * 2000.0f;
 
 	FCollisionQueryParams CollisionParams;
 

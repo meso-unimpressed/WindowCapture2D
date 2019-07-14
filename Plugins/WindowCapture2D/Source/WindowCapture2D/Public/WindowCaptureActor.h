@@ -57,9 +57,8 @@ protected:
 	UPROPERTY(Transient)
 	UCaptureMachine* CaptureMachine = nullptr;
 
-	bool IsTouched = false;
 	FVector2D LastTouchUV;
 
-	WCWindowTouchManager* TouchManager;
+	WCWindowTouchManager* TouchManager = nullptr;
 
 };

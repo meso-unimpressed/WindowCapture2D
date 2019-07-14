@@ -44,7 +44,7 @@ UTexture2D* AWindowCaptureActor::Start()
 	if (Properties.TransferMouse)
 	{
 		TouchManager = new WCWindowTouchManager();
-		TouchManager->InitTouches(1);
+		TouchManager->InitTouches(2);
 	}
 
 	CaptureMachine->Start();
@@ -61,7 +61,7 @@ void AWindowCaptureActor::NotifyTouchOn(FVector2D UV, int32 Index)
 {
 	if (!CaptureMachine->GetTargetWindow()) return;
 
-	if (!IsTouched && TouchManager)
+	if (TouchManager)
 	{
 		HWND hWnd = CaptureMachine->GetTargetWindow();
 		if (!hWnd) return;
@@ -69,17 +69,16 @@ void AWindowCaptureActor::NotifyTouchOn(FVector2D UV, int32 Index)
 		::BringWindowToTop(hWnd);
 
 		auto screenPosition = GetScreenPosition(UV);
-		TouchManager->TouchDown(0, screenPosition.X, screenPosition.Y);
+		TouchManager->TouchDown(Index, screenPosition.X, screenPosition.Y);
 		TouchManager->UpdateAllTouch();
 		LastTouchUV = UV;
-		IsTouched = true;
 	}
 }
 void AWindowCaptureActor::NotifyTouchMove(FVector2D UV, int32 Index)
 {
 	if (!CaptureMachine->GetTargetWindow()) return;
 
-	if (IsTouched && TouchManager)
+	if (TouchManager)
 	{
 		HWND hWnd = CaptureMachine->GetTargetWindow();
 		if (!hWnd) return;
@@ -87,10 +86,9 @@ void AWindowCaptureActor::NotifyTouchMove(FVector2D UV, int32 Index)
 		::BringWindowToTop(hWnd);
 
 		auto screenPosition = GetScreenPosition(UV);
-		TouchManager->TouchMove(0, screenPosition.X, screenPosition.Y);
+		TouchManager->TouchMove(Index, screenPosition.X, screenPosition.Y);
 		TouchManager->UpdateAllTouch();
 		LastTouchUV = UV;
-		IsTouched = true;
 	}
 }
 
@@ -98,11 +96,10 @@ void AWindowCaptureActor::NotifyTouchEnd(int32 Index)
 {
 	if (!CaptureMachine->GetTargetWindow()) return;
 
-	if (IsTouched && TouchManager)
+	if (TouchManager)
 	{
-		TouchManager->TouchUp(0);
+		TouchManager->TouchUp(Index);
 		TouchManager->UpdateAllTouch();
-		IsTouched = false;
 	}
 }
 
