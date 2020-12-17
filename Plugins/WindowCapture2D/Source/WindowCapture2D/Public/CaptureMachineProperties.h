@@ -33,7 +33,8 @@ enum class ETitleMatchingWindowSearch : uint8
 	ForwardMatch,
 	PartialMatch,
 	BackwardMatch,
-	RegularExpression
+	RegularExpression,
+	UseWindowHandle
 };
 
 
@@ -58,5 +59,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WindowCapture2D)
 	bool CutShadow = true;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WindowCapture2D)
+	int64 WindowHandle;
 };

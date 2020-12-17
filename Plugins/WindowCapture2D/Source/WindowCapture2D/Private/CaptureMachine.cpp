@@ -118,11 +118,18 @@ UTexture2D* UCaptureMachine::CreateTexture()
 #if PLATFORM_WINDOWS
 	m_TargetWindow = nullptr;
 
-	::EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL
-		{
-			UCaptureMachine* my = (UCaptureMachine*)lParam;
-			return my->FindTargetWindow(hwnd);
-		}, (LPARAM)this);
+	if(Properties.TitleMatchingWindowSearch == ETitleMatchingWindowSearch::UseWindowHandle)
+	{
+		m_TargetWindow = (HWND)Properties.WindowHandle;
+	}
+	else
+	{
+		::EnumWindows([](HWND hwnd, LPARAM lParam) -> BOOL
+			{
+				UCaptureMachine* my = (UCaptureMachine*)lParam;
+				return my->FindTargetWindow(hwnd);
+			}, (LPARAM)this);
+	}
 
 	if (!m_TargetWindow) return nullptr;
 
@@ -180,6 +187,9 @@ bool UCaptureMachine::FindTargetWindow(HWND hWnd)
 
 			isMatch = matcher.FindNext();
 		}
+		break;
+	case ETitleMatchingWindowSearch::UseWindowHandle:
+		isMatch = hWnd == (HWND)Properties.WindowHandle;
 		break;
 	}
 
